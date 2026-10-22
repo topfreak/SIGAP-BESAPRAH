@@ -184,18 +184,21 @@ $$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 -- --- Kebijakan: users_profile ---
 -- 1. Semua pengguna terautentikasi dapat melihat profil rekan kerja
+DROP POLICY IF EXISTS "Users can view all profiles" ON public.users_profile;
 CREATE POLICY "Users can view all profiles"
   ON public.users_profile FOR SELECT
   TO authenticated
   USING (true);
 
 -- 2. Pengguna dapat memperbarui profil miliknya sendiri
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.users_profile;
 CREATE POLICY "Users can update their own profile"
   ON public.users_profile FOR UPDATE
   TO authenticated
   USING (auth.uid() = id);
 
 -- 3. Pengguna dapat memasukkan data profilnya
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users_profile;
 CREATE POLICY "Users can insert their own profile"
   ON public.users_profile FOR INSERT
   TO authenticated
@@ -218,11 +221,13 @@ CREATE POLICY "Allow public read on master_syarat"
   USING (true);
 
 -- 2. Hanya role Admin TU dan PPK yang dapat mengubah/mengelola master data
+DROP POLICY IF EXISTS "Admin TU and PPK can manage master_akun" ON public.master_akun;
 CREATE POLICY "Admin TU and PPK can manage master_akun"
   ON public.master_akun FOR ALL
   TO authenticated
   USING (public.get_current_role() IN ('admin_tu', 'ppk'));
 
+DROP POLICY IF EXISTS "Admin TU and PPK can manage master_syarat" ON public.master_syarat;
 CREATE POLICY "Admin TU and PPK can manage master_syarat"
   ON public.master_syarat FOR ALL
   TO authenticated
@@ -232,6 +237,7 @@ CREATE POLICY "Admin TU and PPK can manage master_syarat"
 -- 1. SELECT:
 --    - Tim Kerja hanya melihat berkas buatannya
 --    - Verifikator (Admin TU, PPK, Bendahara, PPSPM) dapat melihat seluruh berkas
+DROP POLICY IF EXISTS "View pengajuan_spj based on role" ON public.pengajuan_spj;
 CREATE POLICY "View pengajuan_spj based on role"
   ON public.pengajuan_spj FOR SELECT
   TO authenticated
@@ -241,6 +247,7 @@ CREATE POLICY "View pengajuan_spj based on role"
   );
 
 -- 2. INSERT: Semua user terautentikasi dapat membuat pengajuan baru
+DROP POLICY IF EXISTS "Authenticated users can insert pengajuan_spj" ON public.pengajuan_spj;
 CREATE POLICY "Authenticated users can insert pengajuan_spj"
   ON public.pengajuan_spj FOR INSERT
   TO authenticated
@@ -249,6 +256,7 @@ CREATE POLICY "Authenticated users can insert pengajuan_spj"
 -- 3. UPDATE:
 --    - Tim Kerja dapat memperbarui pengajuannya sendiri HANYA jika berkas masih berada di 'tim_kerja'
 --    - Verifikator (Admin TU, PPK, Bendahara, PPSPM) dapat memperbarui posisi & status kelengkapan
+DROP POLICY IF EXISTS "Update pengajuan_spj based on role and position" ON public.pengajuan_spj;
 CREATE POLICY "Update pengajuan_spj based on role and position"
   ON public.pengajuan_spj FOR UPDATE
   TO authenticated
@@ -258,6 +266,7 @@ CREATE POLICY "Update pengajuan_spj based on role and position"
   );
 
 -- 4. DELETE: Pengaju hanya dapat menghapus saat masih draft di tim_kerja
+DROP POLICY IF EXISTS "Delete draft pengajuan_spj only" ON public.pengajuan_spj;
 CREATE POLICY "Delete draft pengajuan_spj only"
   ON public.pengajuan_spj FOR DELETE
   TO authenticated
@@ -265,6 +274,7 @@ CREATE POLICY "Delete draft pengajuan_spj only"
 
 -- --- Kebijakan: detail_syarat_spj ---
 -- 1. SELECT: Mengikuti hak akses pada pengajuan_spj induk
+DROP POLICY IF EXISTS "View detail_syarat_spj" ON public.detail_syarat_spj;
 CREATE POLICY "View detail_syarat_spj"
   ON public.detail_syarat_spj FOR SELECT
   TO authenticated
@@ -280,6 +290,7 @@ CREATE POLICY "View detail_syarat_spj"
   );
 
 -- 2. INSERT: Otomatis diisi saat pengajuan dibuat oleh tim kerja atau verifikator
+DROP POLICY IF EXISTS "Insert detail_syarat_spj" ON public.detail_syarat_spj;
 CREATE POLICY "Insert detail_syarat_spj"
   ON public.detail_syarat_spj FOR INSERT
   TO authenticated
@@ -295,6 +306,7 @@ CREATE POLICY "Insert detail_syarat_spj"
   );
 
 -- 3. UPDATE: Verifikator atau pemohon (saat status di tim_kerja)
+DROP POLICY IF EXISTS "Update detail_syarat_spj" ON public.detail_syarat_spj;
 CREATE POLICY "Update detail_syarat_spj"
   ON public.detail_syarat_spj FOR UPDATE
   TO authenticated
