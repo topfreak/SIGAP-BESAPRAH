@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS public.pengajuan_spj (
   nomor_surat_tugas VARCHAR(100),
   tim_kerja VARCHAR(50) NOT NULL DEFAULT 'sosial',
   nama_pj TEXT,
+  metode_bayar VARCHAR(10) NOT NULL DEFAULT 'LS',
   nominal_rpd NUMERIC(15, 2) NOT NULL DEFAULT 0,
   nominal_pengajuan NUMERIC(15, 2) NOT NULL DEFAULT 0,
   posisi_berkas public.posisi_berkas_enum NOT NULL DEFAULT 'tim_kerja',
@@ -107,6 +108,7 @@ CREATE TABLE IF NOT EXISTS public.pengajuan_spj (
 -- Migration pendukung jika tabel sudah ada di Supabase
 ALTER TABLE public.pengajuan_spj ADD COLUMN IF NOT EXISTS tim_kerja VARCHAR(50) NOT NULL DEFAULT 'sosial';
 ALTER TABLE public.pengajuan_spj ADD COLUMN IF NOT EXISTS nama_pj TEXT;
+ALTER TABLE public.pengajuan_spj ADD COLUMN IF NOT EXISTS metode_bayar VARCHAR(10) NOT NULL DEFAULT 'LS';
 
 -- TABEL 5: Detail Checklist Dokumen Fisik Per Pengajuan SPJ
 CREATE TABLE IF NOT EXISTS public.detail_syarat_spj (
