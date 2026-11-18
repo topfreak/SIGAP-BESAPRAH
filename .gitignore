@@ -23,3 +23,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dokumen referensi, proposal, dan dokumentasi
+referensi/
+scripts/
+*.docx
+*.pdf
+*.xlsx
+

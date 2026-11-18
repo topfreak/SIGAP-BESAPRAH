@@ -61,7 +61,7 @@ export function AuditTrailTimeline({ riwayat = [] }) {
         <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
           Jejak Digital & Tanggung Jawab Fisik Berkas ({riwayat.length} Catatan)
         </div>
-        <span className="text-[11px] text-blue-700 font-semibold bg-blue-50 px-2.5 py-0.5 rounded-md">
+        <span className="text-[11px] text-indigo-700 font-semibold bg-indigo-50 px-2.5 py-0.5 rounded-md">
           Akuntabilitas BPS Terjamin
         </span>
       </div>
@@ -97,13 +97,13 @@ export function AuditTrailTimeline({ riwayat = [] }) {
 
                 {/* Profil Petugas Pemroses */}
                 <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 w-fit">
-                  <User className="w-3.5 h-3.5 text-blue-600" />
+                  <User className="w-3.5 h-3.5 text-indigo-600" />
                   <span>Diproses oleh: <strong className="text-slate-800">{entry.petugas}</strong> ({entry.jabatan})</span>
                 </div>
 
                 {/* Catatan / Alasan jika ada */}
                 {entry.catatan && (
-                  <div className="text-xs text-slate-600 bg-blue-50/40 p-3 rounded-xl border border-blue-100/60 leading-relaxed italic">
+                  <div className="text-xs text-slate-600 bg-indigo-50/40 p-3 rounded-xl border border-indigo-100/60 leading-relaxed italic">
                     "{entry.catatan}"
                   </div>
                 )}

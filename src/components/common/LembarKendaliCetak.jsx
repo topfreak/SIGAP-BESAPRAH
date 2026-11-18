@@ -36,13 +36,13 @@ export function LembarKendaliCetak({ spj }) {
     <div className="space-y-4">
       
       {/* Tombol Cetak (Tidak ikut tercetak saat print) */}
-      <div className="print:hidden flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-        <div className="text-xs sm:text-sm text-blue-900">
+      <div className="print:hidden flex items-center justify-between p-4 bg-indigo-50 border border-indigo-200 rounded-2xl">
+        <div className="text-xs sm:text-sm text-indigo-900">
           <strong>Lembar Kendali Fisik:</strong> Dokumen ini dapat dicetak pada kertas A4 untuk ditempel pada bagian depan map snelhechter/odner berkas fisik SPJ.
         </div>
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex-shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex-shrink-0"
         >
           <Printer className="w-4 h-4" />
           <span>Cetak Lembar Kendali (A4 / PDF)</span>
@@ -138,7 +138,7 @@ export function LembarKendaliCetak({ spj }) {
                   Metode & Status
                 </td>
                 <td className="p-2.5 font-bold uppercase">
-                  <span className="font-mono text-blue-700 mr-2">[{spj.metode_bayar || 'LS'}]</span>
+                  <span className="font-mono text-indigo-700 mr-2">[{spj.metode_bayar || 'LS'}]</span>
                   {spj.status_kelengkapan === 'hijau'
                     ? '🟢 LENGKAP / SP2D TERBIT'
                     : spj.status_kelengkapan === 'kuning'
@@ -224,8 +224,8 @@ export function LembarKendaliCetak({ spj }) {
               </div>
               <div>
                 <div className="border-b border-slate-400 mx-4 mb-1" />
-                <div className="font-bold text-[10px]">Siti Aminah, S.Sos.</div>
-                <div className="text-[9px] text-slate-500">Petugas Tata Usaha</div>
+                <div className="font-bold text-[10px]">Nuri Hayana, S.Si.</div>
+                <div className="text-[9px] text-slate-500">Pemeriksa Fisik 12 MAK</div>
               </div>
             </div>
 
@@ -233,11 +233,11 @@ export function LembarKendaliCetak({ spj }) {
             <div className="border-r border-slate-200 pr-2 flex flex-col justify-between h-36">
               <div>
                 <div className="font-bold text-[11px]">3. Komitmen Anggaran</div>
-                <div className="text-[10px] text-slate-500">PPK BPS</div>
+                <div className="text-[10px] text-slate-500">PPK BPS Kabupaten Sambas</div>
               </div>
               <div>
                 <div className="border-b border-slate-400 mx-4 mb-1" />
-                <div className="font-bold text-[10px]">Ir. Budi Santoso, M.Si.</div>
+                <div className="font-bold text-[10px]">Andi Noviantoni, S.P.</div>
                 <div className="text-[9px] text-slate-500">Pejabat Pembuat Komitmen</div>
               </div>
             </div>
@@ -250,7 +250,7 @@ export function LembarKendaliCetak({ spj }) {
               </div>
               <div>
                 <div className="border-b border-slate-400 mx-4 mb-1" />
-                <div className="font-bold text-[10px]">Sri Wahyuni, S.E.</div>
+                <div className="font-bold text-[10px]">Fitria Wulandari, S.Tr.Stat.</div>
                 <div className="text-[9px] text-slate-500">Bendahara Pengeluaran</div>
               </div>
             </div>

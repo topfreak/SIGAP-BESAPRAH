@@ -16,10 +16,10 @@ export function AlurProgress({ currentPosition, compact = false }) {
 
   if (compact) {
     return (
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50/80 border border-blue-200/80 text-blue-900 text-xs font-medium">
-        <MapPin className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 animate-bounce" />
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50/80 border border-indigo-200/80 text-indigo-900 text-xs font-medium">
+        <MapPin className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0 animate-bounce" />
         <span>Posisi Fisik: <strong>Meja {currentStep.nama}</strong></span>
-        <span className="text-blue-500 font-normal">({currentStep.no}/6)</span>
+        <span className="text-indigo-500 font-normal">({currentStep.no}/6)</span>
       </div>
     )
   }
@@ -27,16 +27,16 @@ export function AlurProgress({ currentPosition, compact = false }) {
   return (
     <div className="w-full py-4">
       {/* Current Position Banner for non-tech users */}
-      <div className="mb-4 p-3 bg-blue-50/90 border border-blue-200 rounded-xl flex items-center justify-between text-xs sm:text-sm text-blue-900">
+      <div className="mb-4 p-3 bg-indigo-50/90 border border-indigo-200 rounded-xl flex items-center justify-between text-xs sm:text-sm text-indigo-900">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+          <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
             {currentStep.no}
           </div>
           <span>
             Posisi fisik berkas saat ini berada di: <strong>Meja {currentStep.nama} ({currentStep.peran})</strong>
           </span>
         </div>
-        <span className="text-xs text-blue-600 font-semibold hidden md:inline">
+        <span className="text-xs text-indigo-600 font-semibold hidden md:inline">
           Tahap {currentStep.no} dari 6
         </span>
       </div>
@@ -53,7 +53,7 @@ export function AlurProgress({ currentPosition, compact = false }) {
               key={meja.key}
               className={`p-3 rounded-xl border transition-all text-center relative ${
                 isCurrent
-                  ? 'bg-blue-600 border-blue-600 text-white shadow-md ring-4 ring-blue-100 scale-102 z-10'
+                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md ring-4 ring-indigo-100 scale-102 z-10'
                   : isPassed
                   ? 'bg-slate-50 border-slate-200 text-slate-700'
                   : 'bg-white border-slate-100 text-slate-400'
@@ -64,7 +64,7 @@ export function AlurProgress({ currentPosition, compact = false }) {
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                     isCurrent
-                      ? 'bg-white text-blue-700'
+                      ? 'bg-white text-indigo-700'
                       : isPassed
                       ? 'bg-emerald-600 text-white'
                       : 'bg-slate-100 text-slate-400'
@@ -78,7 +78,7 @@ export function AlurProgress({ currentPosition, compact = false }) {
                 {meja.nama}
               </div>
 
-              <div className={`text-[11px] mt-0.5 truncate ${isCurrent ? 'text-blue-100' : 'text-slate-400'}`}>
+              <div className={`text-[11px] mt-0.5 truncate ${isCurrent ? 'text-indigo-100' : 'text-slate-400'}`}>
                 {meja.peran}
               </div>
 

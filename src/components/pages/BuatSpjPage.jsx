@@ -19,7 +19,7 @@ import { useSpj } from '../../context/SpjContext'
 import { TIM_KERJA_BPS } from '../../data/bpsStructure'
 import { KATEGORI_MAK, METODE_PEMBAYARAN_BPS, getMakByIdOrKode } from '../../data/bpsMakData'
 
-export function BuatSpjPage() {
+export function BuatSpjPage({ onNavigate }) {
   const { navigateTo, goBack } = useNavigation()
   const { currentUser } = useAuth()
   const { masterAkunList, tambahPengajuan } = useSpj()
@@ -96,7 +96,11 @@ export function BuatSpjPage() {
         `Posisi Berkas Fisik: Meja Tata Usaha (Admin TU)\n\n` +
         `Silakan cetak lembar kendali A4 dan bawa dokumen fisik ke loket Tata Usaha.`
       )
-      navigateTo('daftar_spj')
+      if (onNavigate) {
+        onNavigate('spj_table')
+      } else {
+        navigateTo('daftar_spj')
+      }
     } else {
       alert('Gagal menyimpan pengajuan. Silakan coba kembali.')
     }
@@ -108,18 +112,18 @@ export function BuatSpjPage() {
       {/* Tombol Navigasi Kembali */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => goBack('beranda')}
+          onClick={() => (onNavigate ? onNavigate('spj_table') : goBack('beranda'))}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-2xs hover:border-slate-300"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Beranda</span>
+          <span>Kembali ke Daftar Pengajuan</span>
         </button>
       </div>
 
       {/* Header Formulir */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
-          <FileCheck2 className="w-3.5 h-3.5 text-blue-600" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">
+          <FileCheck2 className="w-3.5 h-3.5 text-indigo-600" />
           <span>Perekaman Berkas Fisik Baru</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -137,7 +141,7 @@ export function BuatSpjPage() {
         {/* ============================================================== */}
         <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-6">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+            <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
               1
             </span>
             <div>
@@ -154,14 +158,14 @@ export function BuatSpjPage() {
             {/* Dropdown Asal Tim Kerja / Fungsi Teknis */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-blue-600" />
+                <Building2 className="w-4 h-4 text-indigo-600" />
                 <span>Asal Tim Kerja / Fungsi Teknis</span>
                 <span className="text-rose-500">*</span>
               </label>
               <select
                 value={selectedTimKerja}
                 onChange={(e) => setSelectedTimKerja(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 bg-white shadow-2xs"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold text-slate-800 bg-white shadow-2xs"
               >
                 {TIM_KERJA_BPS.map((tim) => (
                   <option key={tim.id} value={tim.id}>
@@ -177,7 +181,7 @@ export function BuatSpjPage() {
             {/* Nama Penanggung Jawab (PJ) Kegiatan */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <UserCheck className="w-4 h-4 text-blue-600" />
+                <UserCheck className="w-4 h-4 text-indigo-600" />
                 <span>Nama Penanggung Jawab (PJ) Kegiatan / Ketua Tim</span>
                 <span className="text-rose-500">*</span>
               </label>
@@ -187,7 +191,7 @@ export function BuatSpjPage() {
                 onChange={(e) => setNamaPj(e.target.value)}
                 placeholder="Contoh: Ahmad Fauzi, S.Tr.Stat."
                 required
-                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-800 bg-white shadow-2xs"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-slate-800 bg-white shadow-2xs"
               />
               <p className="text-[11px] text-slate-500">
                 Nama ketua tim atau pejabat penanggung jawab teknis pelaksanaan kegiatan di BPS.
@@ -201,7 +205,7 @@ export function BuatSpjPage() {
         {/* ============================================================== */}
         <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-6">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+            <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
               2
             </span>
             <div>
@@ -222,13 +226,13 @@ export function BuatSpjPage() {
               {/* Dropdown 1: Kategori Belanja */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-blue-600" />
+                  <Layers className="w-4 h-4 text-indigo-600" />
                   <span>Kategori Belanja BPS</span>
                 </label>
                 <select
                   value={selectedKategori}
                   onChange={(e) => handleKategoriChange(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 bg-white shadow-2xs"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold text-slate-800 bg-white shadow-2xs"
                 >
                   {KATEGORI_MAK.map((kat) => (
                     <option key={kat.id} value={kat.id}>
@@ -244,14 +248,14 @@ export function BuatSpjPage() {
               {/* Dropdown 2: Pilihan Kode Akun MAK */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-blue-600" />
+                  <CreditCard className="w-4 h-4 text-indigo-600" />
                   <span>Mata Anggaran Kegiatan (MAK)</span>
                   <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={activeMak.id}
                   onChange={(e) => setSelectedMakId(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-blue-400 bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-blue-900 shadow-2xs"
+                  className="w-full px-4 py-3 rounded-2xl border border-indigo-300 bg-indigo-50/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-indigo-900 shadow-2xs"
                 >
                   {availableMakList.map((mak) => (
                     <option key={mak.id} value={mak.id}>
@@ -271,14 +275,14 @@ export function BuatSpjPage() {
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-sm font-black px-3 py-1 rounded-xl bg-blue-600 text-white shadow-xs">
+                  <span className="font-mono text-sm font-black px-3 py-1 rounded-xl bg-indigo-600 text-white shadow-xs">
                     MAK {activeMak.kode_akun}
                   </span>
                   <h3 className="text-sm sm:text-base font-bold text-slate-900">
                     {activeMak.nama_akun}
                   </h3>
                 </div>
-                <span className="text-xs font-semibold text-blue-700 bg-blue-100/70 px-2.5 py-1 rounded-lg self-start sm:self-auto">
+                <span className="text-xs font-semibold text-indigo-700 bg-indigo-100/70 px-2.5 py-1 rounded-lg self-start sm:self-auto">
                   {activeMak.singkatan}
                 </span>
               </div>
@@ -290,10 +294,10 @@ export function BuatSpjPage() {
 
               {/* BOX CONTOH KEGIATAN RIIL (DITEMPATKAN DI DALAM CONTAINER RAPI) */}
               {activeMak.kegiatan_contoh && (
-                <div className="p-3.5 rounded-xl bg-white border border-blue-200 text-xs text-blue-950 flex items-start gap-2.5 shadow-2xs">
-                  <Sparkles className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-white border border-indigo-200 text-xs text-indigo-950 flex items-start gap-2.5 shadow-2xs">
+                  <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <span className="font-bold text-[11px] uppercase tracking-wider text-blue-800">
+                    <span className="font-bold text-[11px] uppercase tracking-wider text-indigo-800">
                       Contoh Kegiatan Riil di BPS:
                     </span>
                     <p className="text-xs text-slate-700 leading-relaxed font-medium">
@@ -335,12 +339,12 @@ export function BuatSpjPage() {
                       onClick={() => setMetodeBayar(metode.id)}
                       className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-start gap-3.5 ${
                         isSelected
-                          ? 'bg-blue-50/80 border-blue-600 ring-2 ring-blue-500/20 shadow-xs'
+                          ? 'bg-indigo-50/80 border-indigo-600 ring-2 ring-indigo-500/20 shadow-xs'
                           : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
                       }`}
                     >
                       <div className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center flex-shrink-0 ${
-                        isSelected ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300'
+                        isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300'
                       }`}>
                         {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                       </div>
@@ -366,7 +370,7 @@ export function BuatSpjPage() {
         {/* ============================================================== */}
         <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-6">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+            <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
               3
             </span>
             <div>
@@ -392,7 +396,7 @@ export function BuatSpjPage() {
                 onChange={(e) => setNamaKegiatan(e.target.value)}
                 placeholder="Contoh: Pelaksanaan Pendataan Lapangan Survei Angkatan Kerja Nasional (SAKERNAS) Triwulan I"
                 required
-                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-800 bg-white shadow-2xs"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-slate-800 bg-white shadow-2xs"
               />
               <p className="text-[11px] text-slate-500">
                 Tuliskan nama kegiatan dengan jelas dan lengkap sesuai Kerangka Acuan Kerja (KAK) / DIPA BPS.
@@ -417,14 +421,14 @@ export function BuatSpjPage() {
                   onChange={(e) => setNominalPengajuan(e.target.value)}
                   placeholder="Contoh: 18500000"
                   required
-                  className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono font-bold text-slate-900 bg-white shadow-2xs"
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-mono font-bold text-slate-900 bg-white shadow-2xs"
                 />
               </div>
 
               {/* Pratinjau Terbilang Rupiah */}
               <div className="flex items-center justify-between text-xs pt-1 px-1">
                 <span className="text-slate-500">Pratinjau Format Rupiah:</span>
-                <span className="font-mono font-black text-blue-700 text-sm">
+                <span className="font-mono font-black text-indigo-700 text-sm">
                   {formatRupiahPreview(nominalPengajuan)}
                 </span>
               </div>
@@ -437,7 +441,7 @@ export function BuatSpjPage() {
         {/* ============================================================== */}
         <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-4">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+            <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
               4
             </span>
             <div>
@@ -456,7 +460,7 @@ export function BuatSpjPage() {
                 key={item.id}
                 className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-xs"
               >
-                <div className="w-5 h-5 rounded-md bg-blue-100 text-blue-700 font-bold flex items-center justify-center flex-shrink-0 text-[10px]">
+                <div className="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center flex-shrink-0 text-[10px]">
                   {idx + 1}
                 </div>
                 <div className="space-y-0.5">
@@ -484,7 +488,7 @@ export function BuatSpjPage() {
         <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4">
           <button
             type="button"
-            onClick={() => goBack('beranda')}
+            onClick={() => (onNavigate ? onNavigate('spj_table') : goBack('beranda'))}
             className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-300 text-slate-700 text-xs sm:text-sm font-bold hover:bg-slate-100 transition-all cursor-pointer"
           >
             Batal & Kembali
@@ -493,7 +497,7 @@ export function BuatSpjPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm shadow-lg shadow-indigo-600/25 transition-all cursor-pointer disabled:opacity-50"
           >
             <span>{isSubmitting ? 'Menyimpan...' : 'Simpan & Siapkan Lembar Kendali'}</span>
             <ArrowRight className="w-4 h-4" />

@@ -4,55 +4,82 @@ import { supabase, isSupabaseConfigured } from '../lib/supabaseClient'
 const AuthContext = createContext(null)
 
 export const DEMO_USERS = {
-  tim_kerja: {
-    id: 'user-tim-001',
-    nama_lengkap: 'Ahmad Fauzi, S.Tr.Stat.',
-    nip: '199505122018011002',
-    role: 'tim_kerja',
-    tim_kerja: 'sosial',
-    jabatan: 'PJ Kegiatan (Tim Statistik Sosial)',
-    email: 'ahmad.fauzi@bps.go.id',
+  admin: {
+    id: 'user-admin-000',
+    username: 'superadmin',
+    nama_lengkap: 'Super Admin',
+    nip: '-',
+    role: 'admin',
+    inisial: 'SA',
+    jabatan: 'Administrator Sistem (Super Admin)',
+    email: 'superadmin@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
+  },
+  ppk: {
+    id: 'user-ppk-001',
+    username: 'ppk',
+    nama_lengkap: 'Andi Noviantoni, S.P.',
+    nip: '197911132011011004',
+    role: 'ppk',
+    inisial: 'AN',
+    jabatan: 'Pejabat Pembuat Komitmen (PPK BPS)',
+    email: 'andi.noviantoni@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
   },
   admin_tu: {
     id: 'user-tu-002',
-    nama_lengkap: 'Siti Aminah, S.Sos.',
-    nip: '198803152010122003',
+    username: 'admin_tu',
+    nama_lengkap: 'Nuri Hayana, S.Si.',
+    nip: '198406102011012028',
     role: 'admin_tu',
-    jabatan: 'Petugas Tata Usaha (Pemeriksa Berkas Awal)',
-    email: 'siti.aminah@bps.go.id',
+    inisial: 'NH',
+    jabatan: 'Petugas Tata Usaha (Pemeriksa Berkas 12 MAK)',
+    email: 'nuri.hayana@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
   },
-  ppk: {
-    id: 'user-ppk-003',
-    nama_lengkap: 'Ir. Budi Santoso, M.Si.',
-    nip: '197608202000031001',
-    role: 'ppk',
-    jabatan: 'Pejabat Pembuat Komitmen (PPK BPS)',
-    email: 'budi.santoso@bps.go.id',
+  tim_kerja: {
+    id: 'user-tim-003',
+    username: 'tim_kerja',
+    nama_lengkap: 'Nurhidayatul Fitri, S.Tr.Stat.',
+    nip: '199901182022012002',
+    role: 'tim_kerja',
+    inisial: 'NF',
+    tim_kerja: 'sosial',
+    jabatan: 'PJ Kegiatan Susenas (Tim Statistik Sosial)',
+    email: 'nurhidayatul.fitri@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
   },
   bendahara: {
     id: 'user-ben-004',
-    nama_lengkap: 'Sri Wahyuni, S.E.',
-    nip: '198411022008012005',
+    username: 'bendahara',
+    nama_lengkap: 'Fitria Wulandari, S.Tr.Stat.',
+    nip: '199702272019012001',
     role: 'bendahara',
-    jabatan: 'Bendahara Pengeluaran (Pajak & Kuitansi)',
-    email: 'sri.wahyuni@bps.go.id',
+    inisial: 'FW',
+    jabatan: 'Bendahara Pengeluaran (Wulan TU)',
+    email: 'fitria.wulandari@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
   },
   ppspm: {
     id: 'user-spm-005',
-    nama_lengkap: 'Drs. Hendra Wijaya',
-    nip: '197104101994031002',
+    username: 'ppspm',
+    nama_lengkap: 'Solikhin, SST., M.Si',
+    nip: '197908271999121001',
     role: 'ppspm',
-    jabatan: 'Pejabat Penandatangan SPM (PPSPM BPS)',
-    email: 'hendra.wijaya@bps.go.id',
+    inisial: 'SL',
+    jabatan: 'Kepala BPS Kabupaten Sambas (KPA & PPSPM)',
+    email: 'solikhin@bps.go.id',
+    satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
   },
 }
 
 export const BPS_ROLES = [
-  { id: 'tim_kerja', label: 'Tim Kerja (Pengusul SPJ)', deskripsi: 'Penyusun berkas kegiatan & revisi fisik' },
-  { id: 'admin_tu', label: 'Tata Usaha (Admin TU)', deskripsi: 'Pemeriksaan fisik awal & kelengkapan' },
-  { id: 'ppk', label: 'PPK (Komitmen Anggaran)', deskripsi: 'Pengujian komitmen & beban DIPA' },
-  { id: 'bendahara', label: 'Bendahara Pengeluaran', deskripsi: 'Pemeriksaan pajak, bukti bayar & kuitansi' },
-  { id: 'ppspm', label: 'PPSPM', deskripsi: 'Pengujian SPM & penerbitan SP2D' },
+  { id: 'admin', label: 'Administrator (Super Admin)', deskripsi: 'Akses penuh seluruh meja kerja, manajemen pengguna & konfigurasi sistem' },
+  { id: 'ppk', label: 'PPK (Komitmen Anggaran)', deskripsi: 'Pengujian komitmen & beban pagu DIPA 1301' },
+  { id: 'admin_tu', label: 'Tata Usaha (Admin TU)', deskripsi: 'Pemeriksaan fisik awal & kelengkapan 12 MAK' },
+  { id: 'tim_kerja', label: 'Tim Kerja (Pengusul SPJ)', deskripsi: 'Penyusun berkas kegiatan & revisi fisik kekurangan Sheet3' },
+  { id: 'bendahara', label: 'Bendahara Pengeluaran', deskripsi: 'Pemeriksaan pajak PPh/PPN, bukti transfer CMS & kuitansi' },
+  { id: 'ppspm', label: 'PPSPM', deskripsi: 'Pengujian formalitas dokumen SPM & penerbitan SP2D' },
 ]
 
 export function AuthProvider({ children }) {
@@ -66,7 +93,7 @@ export function AuthProvider({ children }) {
     } catch (e) {
       console.warn('Gagal membaca sesi pengguna:', e)
     }
-    // Default awal: null (mengarahkan pengguna baru ke halaman Login)
+    // Default awal: null (mengarahkan pengguna baru ke portal Login resmi BPS)
     return null
   })
 
@@ -105,6 +132,7 @@ export function AuthProvider({ children }) {
               tim_kerja: session.user.user_metadata?.tim_kerja || 'sosial',
               nip: session.user.user_metadata?.nip || '-',
               email: session.user.email,
+              satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
             })
           }
         }
@@ -116,15 +144,20 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  // Fungsi Login dengan Email & Password
-  const loginWithEmail = async (email, password) => {
+  // Fungsi Login dengan Username & Password (resmi BPS Sambas)
+  const loginWithUsername = async (username, password) => {
     setLoading(true)
     setAuthError(null)
 
+    const cleanInput = (username || '').trim().toLowerCase()
+    const cleanNip = cleanInput.replace(/\s+/g, '')
+
     // Jika Supabase live terhubung
     if (isSupabaseConfigured) {
+      // Supabase biasanya menggunakan email, jika input bukan email jadikan domain satker
+      const loginEmail = cleanInput.includes('@') ? cleanInput : `${cleanInput}@bps.go.id`
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       })
 
@@ -138,48 +171,75 @@ export function AuthProvider({ children }) {
       return { success: true }
     }
 
-    // Mode Simulasi BPS (Sandbox)
-    await new Promise((r) => setTimeout(r, 400)) // simulasi respons cepat
-    const matched = Object.values(DEMO_USERS).find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
-    )
+    // Mode Autentikasi Internal Satker BPS Sambas
+    await new Promise((r) => setTimeout(r, 350))
+
+    // 1. Cek kecocokan di DEMO_USERS (berdasarkan username, key peran, email, atau NIP)
+    const matched = Object.entries(DEMO_USERS).find(([key, u]) => {
+      const uUsername = (u.username || '').toLowerCase()
+      const uEmail = (u.email || '').toLowerCase()
+      const uNip = (u.nip || '').replace(/\s+/g, '')
+
+      return (
+        uUsername === cleanInput ||
+        key.toLowerCase() === cleanInput ||
+        uEmail === cleanInput ||
+        (uNip && uNip === cleanNip && cleanNip.length > 5)
+      )
+    })
 
     if (matched) {
-      setCurrentUser(matched)
+      setCurrentUser(matched[1])
       setLoading(false)
-      return { success: true }
+      return { success: true, user: matched[1] }
     }
 
-    // Default jika email bebas: buatkan profil Tim Kerja
+    // 2. Default jika username terdaftar lainnya: buatkan profil Pegawai BPS Sambas
+    const displayName = cleanInput
+      .replace(/[-_.]/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+
     const customUser = {
       id: 'user-' + Date.now(),
-      nama_lengkap: email.split('@')[0].replace('.', ' ').toUpperCase(),
-      nip: '199001012015011001',
+      username: cleanInput,
+      nama_lengkap: displayName,
+      nip: cleanNip.length >= 18 ? cleanNip : '199501012020011001',
       role: 'tim_kerja',
-      jabatan: 'Pegawai BPS',
-      email: email,
+      inisial: cleanInput.slice(0, 2).toUpperCase(),
+      jabatan: 'Pegawai Organik BPS Sambas',
+      email: `${cleanInput}@bps.go.id`,
+      satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
     }
     setCurrentUser(customUser)
     setLoading(false)
-    return { success: true }
+    return { success: true, user: customUser }
   }
 
-  // Fungsi Registrasi Akun Baru dengan Role & Data BPS Pilihan
-  const registerWithEmail = async ({ email, password, nama_lengkap, nip, role, tim_kerja, jabatan }) => {
+  // Fungsi Login dengan Email (backward-compatibility)
+  const loginWithEmail = async (emailOrUsername, password) => {
+    return loginWithUsername(emailOrUsername, password)
+  }
+
+  // Fungsi Registrasi Akun Baru dengan Username, Role & Data BPS Pilihan
+  const registerWithUsername = async ({ username, email, password, nama_lengkap, nip, role, tim_kerja, jabatan }) => {
     setLoading(true)
     setAuthError(null)
 
+    const cleanUser = (username || email?.split('@')[0] || 'pegawai').trim().toLowerCase()
+    const userEmail = email || `${cleanUser}@bps.go.id`
+
     if (isSupabaseConfigured) {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: userEmail,
         password,
         options: {
           data: {
-            nama_lengkap: nama_lengkap || email.split('@')[0],
+            username: cleanUser,
+            nama_lengkap: nama_lengkap || cleanUser,
             nip: nip || '-',
             role: role || 'tim_kerja',
             tim_kerja: tim_kerja || (role === 'tim_kerja' ? 'sosial' : null),
-            jabatan: jabatan || 'Pegawai BPS',
+            jabatan: jabatan || 'Pegawai BPS Sambas',
           },
         },
       })
@@ -190,16 +250,18 @@ export function AuthProvider({ children }) {
         return { success: false, error: error.message }
       }
 
-      // Jika session langsung terbentuk (misal confirm email dimatikan)
       if (data?.session && data?.user) {
         const newProfile = {
           id: data.user.id,
-          nama_lengkap: nama_lengkap || email.split('@')[0],
+          username: cleanUser,
+          nama_lengkap: nama_lengkap || cleanUser,
           nip: nip || '-',
           role: role || 'tim_kerja',
           tim_kerja: tim_kerja || (role === 'tim_kerja' ? 'sosial' : null),
-          jabatan: jabatan || 'Pegawai BPS',
-          email,
+          inisial: (nama_lengkap || cleanUser).slice(0, 2).toUpperCase(),
+          jabatan: jabatan || 'Pegawai BPS Sambas',
+          email: userEmail,
+          satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
         }
         setCurrentUser(newProfile)
       }
@@ -212,23 +274,29 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // Fallback Mode Sandbox / Lokal
-    await new Promise((r) => setTimeout(r, 400))
+    // Mode Sandbox Satker BPS Sambas
+    await new Promise((r) => setTimeout(r, 350))
     const localUser = {
       id: 'user-' + Date.now(),
-      nama_lengkap: nama_lengkap || email.split('@')[0],
-      nip: nip || '199001012015011001',
+      username: cleanUser,
+      nama_lengkap: nama_lengkap || cleanUser,
+      nip: nip || '199501012020011001',
       role: role || 'tim_kerja',
       tim_kerja: tim_kerja || (role === 'tim_kerja' ? 'sosial' : null),
-      jabatan: jabatan || 'Pegawai BPS',
-      email: email,
+      inisial: (nama_lengkap || cleanUser).slice(0, 2).toUpperCase(),
+      jabatan: jabatan || 'Pegawai BPS Sambas',
+      email: userEmail,
+      satker: 'BPS Kabupaten Sambas (6101 / DIPA 1301)',
     }
     setCurrentUser(localUser)
     setLoading(false)
-    return { success: true, hasSession: true }
+    return { success: true, hasSession: true, user: localUser }
   }
 
-  // Masuk Cepat / Demo Akun (1-Klik untuk menguji tiap peran)
+  // Registrasi dengan Email (backward-compatibility)
+  const registerWithEmail = registerWithUsername
+
+  // Masuk Cepat Akun Uji Coba BPS (1-Klik untuk menguji tiap peran)
   const loginAsRole = (roleKey) => {
     const user = DEMO_USERS[roleKey]
     if (user) {
@@ -238,38 +306,24 @@ export function AuthProvider({ children }) {
     return false
   }
 
-  // Switch role langsung dari header saat di dalam aplikasi
-  const switchRole = (newRole) => {
-    const user = DEMO_USERS[newRole]
-    if (user) {
-      setCurrentUser(user)
-    } else {
-      const roleInfo = BPS_ROLES.find((r) => r.id === newRole)
-      setCurrentUser((prev) => ({
-        ...prev,
-        role: newRole,
-        jabatan: roleInfo ? roleInfo.label : newRole,
-      }))
-    }
-  }
-
   // Keluar / Logout
   const logout = async () => {
     if (isSupabaseConfigured) {
       await supabase.auth.signOut()
     }
     sessionStorage.removeItem('sigap_user_session')
-    sessionStorage.removeItem('sigap_navigation_state')
+    sessionStorage.removeItem('sigap_active_page')
     setCurrentUser(null)
   }
 
   const value = {
     currentUser,
     isAuthenticated: Boolean(currentUser),
+    loginWithUsername,
     loginWithEmail,
+    registerWithUsername,
     registerWithEmail,
     loginAsRole,
-    switchRole,
     logout,
     loading,
     authError,

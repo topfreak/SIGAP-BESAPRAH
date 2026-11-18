@@ -11,6 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Role Pengguna BPS
 DO $$ BEGIN
   CREATE TYPE public.user_role AS ENUM (
+    'admin',        -- Administrator Sistem / Super Admin (Akses Penuh Seluruh Meja & Konfigurasi)
     'tim_kerja',    -- Pembuat pengajuan SPJ kegiatan
     'admin_tu',     -- Verifikasi awal kelengkapan fisik di Tata Usaha
     'ppk',          -- Pejabat Pembuat Komitmen (Validasi & Komitmen Anggaran)
@@ -19,6 +20,13 @@ DO $$ BEGIN
   );
 EXCEPTION
   WHEN duplicate_object THEN null;
+END $$;
+
+-- Pastikan nilai enum 'admin' terdaftar jika tipe sudah pernah dibuat sebelumnya
+DO $$ BEGIN
+  ALTER TYPE public.user_role ADD VALUE IF NOT EXISTS 'admin';
+EXCEPTION
+  WHEN undefined_object THEN null;
 END $$;
 
 -- Posisi Alur Fisik Berkas SPJ
@@ -220,30 +228,30 @@ CREATE POLICY "Allow public read on master_syarat"
   TO anon, authenticated
   USING (true);
 
--- 2. Hanya role Admin TU dan PPK yang dapat mengubah/mengelola master data
+-- 2. Hanya role Admin, Admin TU, dan PPK yang dapat mengubah/mengelola master data
 DROP POLICY IF EXISTS "Admin TU and PPK can manage master_akun" ON public.master_akun;
 CREATE POLICY "Admin TU and PPK can manage master_akun"
   ON public.master_akun FOR ALL
   TO authenticated
-  USING (public.get_current_role() IN ('admin_tu', 'ppk'));
+  USING (public.get_current_role() IN ('admin', 'admin_tu', 'ppk'));
 
 DROP POLICY IF EXISTS "Admin TU and PPK can manage master_syarat" ON public.master_syarat;
 CREATE POLICY "Admin TU and PPK can manage master_syarat"
   ON public.master_syarat FOR ALL
   TO authenticated
-  USING (public.get_current_role() IN ('admin_tu', 'ppk'));
+  USING (public.get_current_role() IN ('admin', 'admin_tu', 'ppk'));
 
 -- --- Kebijakan: pengajuan_spj ---
 -- 1. SELECT:
 --    - Tim Kerja hanya melihat berkas buatannya
---    - Verifikator (Admin TU, PPK, Bendahara, PPSPM) dapat melihat seluruh berkas
+--    - Verifikator (Admin, Admin TU, PPK, Bendahara, PPSPM) dapat melihat seluruh berkas
 DROP POLICY IF EXISTS "View pengajuan_spj based on role" ON public.pengajuan_spj;
 CREATE POLICY "View pengajuan_spj based on role"
   ON public.pengajuan_spj FOR SELECT
   TO authenticated
   USING (
     user_id = auth.uid() 
-    OR public.get_current_role() IN ('admin_tu', 'ppk', 'bendahara', 'ppspm')
+    OR public.get_current_role() IN ('admin', 'admin_tu', 'ppk', 'bendahara', 'ppspm')
   );
 
 -- 2. INSERT: Semua user terautentikasi dapat membuat pengajuan baru
@@ -251,26 +259,29 @@ DROP POLICY IF EXISTS "Authenticated users can insert pengajuan_spj" ON public.p
 CREATE POLICY "Authenticated users can insert pengajuan_spj"
   ON public.pengajuan_spj FOR INSERT
   TO authenticated
-  WITH CHECK (user_id = auth.uid());
+  WITH CHECK (user_id = auth.uid() OR public.get_current_role() = 'admin');
 
 -- 3. UPDATE:
 --    - Tim Kerja dapat memperbarui pengajuannya sendiri HANYA jika berkas masih berada di 'tim_kerja'
---    - Verifikator (Admin TU, PPK, Bendahara, PPSPM) dapat memperbarui posisi & status kelengkapan
+--    - Verifikator & Admin dapat memperbarui posisi & status kelengkapan
 DROP POLICY IF EXISTS "Update pengajuan_spj based on role and position" ON public.pengajuan_spj;
 CREATE POLICY "Update pengajuan_spj based on role and position"
   ON public.pengajuan_spj FOR UPDATE
   TO authenticated
   USING (
     (user_id = auth.uid() AND posisi_berkas = 'tim_kerja')
-    OR public.get_current_role() IN ('admin_tu', 'ppk', 'bendahara', 'ppspm')
+    OR public.get_current_role() IN ('admin', 'admin_tu', 'ppk', 'bendahara', 'ppspm')
   );
 
--- 4. DELETE: Pengaju hanya dapat menghapus saat masih draft di tim_kerja
+-- 4. DELETE: Pengaju saat masih draft atau Administrator kapan saja
 DROP POLICY IF EXISTS "Delete draft pengajuan_spj only" ON public.pengajuan_spj;
 CREATE POLICY "Delete draft pengajuan_spj only"
   ON public.pengajuan_spj FOR DELETE
   TO authenticated
-  USING (user_id = auth.uid() AND posisi_berkas = 'tim_kerja');
+  USING (
+    (user_id = auth.uid() AND posisi_berkas = 'tim_kerja')
+    OR public.get_current_role() = 'admin'
+  );
 
 -- --- Kebijakan: detail_syarat_spj ---
 -- 1. SELECT: Mengikuti hak akses pada pengajuan_spj induk
@@ -284,7 +295,7 @@ CREATE POLICY "View detail_syarat_spj"
       WHERE p.id = detail_syarat_spj.pengajuan_spj_id
       AND (
         p.user_id = auth.uid()
-        OR public.get_current_role() IN ('admin_tu', 'ppk', 'bendahara', 'ppspm')
+        OR public.get_current_role() IN ('admin', 'admin_tu', 'ppk', 'bendahara', 'ppspm')
       )
     )
   );
@@ -300,7 +311,7 @@ CREATE POLICY "Insert detail_syarat_spj"
       WHERE p.id = detail_syarat_spj.pengajuan_spj_id
       AND (
         p.user_id = auth.uid()
-        OR public.get_current_role() IN ('admin_tu', 'ppk', 'bendahara', 'ppspm')
+        OR public.get_current_role() IN ('admin', 'admin_tu', 'ppk', 'bendahara', 'ppspm')
       )
     )
   );
@@ -316,7 +327,7 @@ CREATE POLICY "Update detail_syarat_spj"
       WHERE p.id = detail_syarat_spj.pengajuan_spj_id
       AND (
         (p.user_id = auth.uid() AND p.posisi_berkas = 'tim_kerja')
-        OR public.get_current_role() IN ('admin_tu', 'ppk', 'bendahara', 'ppspm')
+        OR public.get_current_role() IN ('admin', 'admin_tu', 'ppk', 'bendahara', 'ppspm')
       )
     )
   );

@@ -15,6 +15,7 @@ export function Header() {
 
   // Label jabatan resmi untuk badge statis versi final
   const roleLabels = {
+    admin: 'Administrator (Super Admin)',
     tim_kerja: 'Tim Kerja BPS',
     admin_tu: 'Tata Usaha (Admin TU)',
     ppk: 'Pejabat Pembuat Komitmen (PPK)',

@@ -1,81 +1,218 @@
-import React from 'react'
-import { NavigationProvider, useNavigation } from './context/NavigationContext'
+import React, { useState, useEffect } from 'react'
+import Layout from './components/layout/Layout'
+import Dashboard from './components/pages/Dashboard'
+import SpjTable from './components/pages/SpjTable'
+import MasterDataPage from './components/pages/MasterDataPage'
+import PengaturanPage from './components/pages/PengaturanPage'
+import BuatSpjPage from './components/pages/BuatSpjPage'
+import MasterSlsPage from './components/pages/MasterSlsPage'
+import PerjadinPage from './components/pages/PerjadinPage'
+import ChecklistKelengkapanPage from './components/pages/ChecklistKelengkapanPage'
+import HonorMitraPage from './components/pages/HonorMitraPage'
+import PosisiDokumenPage from './components/pages/PosisiDokumenPage'
+import StatusPembayaranPage from './components/pages/StatusPembayaranPage'
+import StatusPengajuanPage from './components/pages/StatusPengajuanPage'
+import RiwayatPpkPage from './components/pages/RiwayatPpkPage'
+import ContentManagementPage from './components/pages/ContentManagementPage'
+import PegawaiPage from './components/pages/PegawaiPage'
+import LoginPage from './components/pages/LoginPage'
+import AccessRestricted from './components/common/AccessRestricted'
+import ErrorBoundary from './components/common/ErrorBoundary'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { SpjProvider } from './context/SpjContext'
-import Header from './components/layout/Header'
-import Navbar from './components/layout/Navbar'
-import DashboardPage from './components/pages/DashboardPage'
-import BerandaPage from './components/pages/BerandaPage'
-import DaftarSpjPage from './components/pages/DaftarSpjPage'
-import DetailSpjPage from './components/pages/DetailSpjPage'
-import BuatSpjPage from './components/pages/BuatSpjPage'
-import PanduanAlurPage from './components/pages/PanduanAlurPage'
-import LaporanPage from './components/pages/LaporanPage'
-import LoginPage from './components/pages/LoginPage'
+import { NavigationProvider } from './context/NavigationContext'
+import { isPageAllowed } from './data/rolePermissions'
 
-// Router sederhana berbasis state tanpa React Router (URL statis & bersih)
-function PageRouter() {
-  const { activePage } = useNavigation()
+const SESSION_PAGE_KEY = 'sigap_active_page'
 
-  switch (activePage) {
-    case 'beranda':
-    case 'dashboard':
-      return <BerandaPage />
-    case 'daftar_spj':
-      return <DaftarSpjPage />
-    case 'detail_spj':
-      return <DetailSpjPage />
-    case 'buat_spj':
-      return <BuatSpjPage />
-    case 'laporan':
-      return <LaporanPage />
-    case 'panduan_alur':
-      return <PanduanAlurPage />
-    default:
-      return <BerandaPage />
+function MainApp() {
+  const { currentUser, isAuthenticated, logout } = useAuth()
+
+  // Session-Persistent State-Based Routing menggunakan useState murni
+  const [activePage, setActivePage] = useState(() => {
+    try {
+      const savedPage = sessionStorage.getItem(SESSION_PAGE_KEY)
+      if (savedPage) return savedPage
+    } catch (err) {
+      console.warn('Gagal membaca activePage dari sessionStorage:', err)
+    }
+    return 'dashboard'
+  })
+
+  // Sinkronkan activePage ke sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SESSION_PAGE_KEY, activePage)
+    } catch (err) {
+      console.warn('Gagal menyimpan activePage ke sessionStorage:', err)
+    }
+
+    if (window.location.hash || window.location.search) {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [activePage])
+
+  // Handler Logout
+  const handleLogout = async () => {
+    sessionStorage.removeItem(SESSION_PAGE_KEY)
+    await logout()
+    setActivePage('dashboard')
   }
-}
 
-// Layout Utama Modern Minimalist
-function AppContent() {
-  const { isAuthenticated } = useAuth()
-  const { activePage } = useNavigation()
+  // 1. JIKA BELUM LOGIN: TAMPILKAN PORTAL LOGIN ASLI RESMI BPS SAMBAS
+  if (!isAuthenticated || !currentUser) {
+    return <LoginPage onLoginSuccess={() => setActivePage('dashboard')} />
+  }
 
-  // Jika belum login atau state halaman adalah login
-  if (!isAuthenticated || activePage === 'login') {
-    return <LoginPage />
+  // 2. PEMBATASAN AKSES: HANYA SUPERADMIN YANG BISA BUKA FULL MENU
+  const userRole = currentUser.role || 'tim_kerja'
+  const isAllowed = isPageAllowed(activePage, userRole)
+
+  // Render halaman dinamis sesuai state activePage
+  const renderContent = () => {
+    if (!isAllowed) {
+      return (
+        <AccessRestricted
+          currentUser={currentUser}
+          onNavigate={setActivePage}
+        />
+      )
+    }
+
+    switch (activePage) {
+      case 'dashboard':
+        return <Dashboard key="dashboard" onNavigate={setActivePage} currentUser={currentUser} />
+
+      // Perjalanan Dinas (Kalender, Matriks Penugasan 19 Kecamatan, Rekap Biaya Perjadin)
+      case 'kalender_perjadin':
+      case 'matriks_perjadin':
+      case 'rekap_perjadin':
+      case 'rekap_biaya_perjadin':
+        return <PerjadinPage key={activePage} mode={activePage} onNavigate={setActivePage} />
+
+      // Administrasi & SPJ
+      case 'spj_table':
+      case 'pengajuan':
+      case 'daftar_pengajuan':
+        return (
+          <SpjTable
+            key="spj_table"
+            onNavigate={setActivePage}
+            currentUser={currentUser}
+          />
+        )
+      case 'posisi_dokumen':
+        return <PosisiDokumenPage key="posisi_dokumen" onNavigate={setActivePage} />
+      case 'status_pembayaran':
+        return <StatusPembayaranPage key="status_pembayaran" onNavigate={setActivePage} />
+      case 'status_pengajuan':
+        return <StatusPengajuanPage key="status_pengajuan" onNavigate={setActivePage} />
+      case 'jenis_dokumen':
+        return (
+          <ChecklistKelengkapanPage
+            key="jenis_dokumen"
+            mode="jenis_dokumen"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'checklist_kelengkapan':
+        return (
+          <ChecklistKelengkapanPage
+            key="checklist_kelengkapan"
+            mode="checklist_kelengkapan"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'custom_page':
+      case 'sop_spj':
+        return (
+          <ContentManagementPage
+            key="sop_spj"
+            mode="custom_page"
+            onNavigate={setActivePage}
+          />
+        )
+
+      // Honor Mitra Statistik
+      case 'monitor_honor_mitra':
+        return (
+          <HonorMitraPage
+            key="monitor_honor_mitra"
+            mode="monitor_honor_mitra"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'kegiatan_manmit':
+        return (
+          <HonorMitraPage
+            key="kegiatan_manmit"
+            mode="kegiatan_manmit"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'honor_mitra':
+      case 'alokasi_honor':
+        return (
+          <HonorMitraPage
+            key="honor_mitra"
+            mode="honor_mitra"
+            onNavigate={setActivePage}
+          />
+        )
+
+      // Master Data & Wilayah
+      case 'master_sls':
+        return <MasterSlsPage key="master_sls" onNavigate={setActivePage} />
+      case 'pegawai':
+        return <PegawaiPage key="pegawai" mode="pegawai" currentUser={currentUser} />
+
+      // Sistem & Informasi
+      case 'riwayat_ppk':
+        return <RiwayatPpkPage key="riwayat_ppk" onNavigate={setActivePage} />
+      case 'jadwal_terpadu':
+        return (
+          <ContentManagementPage
+            key="jadwal_terpadu"
+            mode="jadwal_terpadu"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'microsite':
+        return (
+          <ContentManagementPage
+            key="microsite"
+            mode="microsite"
+            onNavigate={setActivePage}
+          />
+        )
+      case 'pengguna':
+        return <PegawaiPage key="pengguna" mode="pengguna" currentUser={currentUser} />
+      case 'pengaturan':
+        return <PengaturanPage key="pengaturan" currentUser={currentUser} />
+
+      // Form Pengajuan SPJ Baru
+      case 'pengajuan_baru':
+      case 'buat_spj':
+        return <BuatSpjPage key="buat_spj" onNavigate={setActivePage} currentUser={currentUser} />
+      case 'master_data':
+        return <MasterDataPage key="master_data" currentUser={currentUser} />
+
+      default:
+        return <Dashboard key="default_dash" onNavigate={setActivePage} currentUser={currentUser} />
+    }
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/70 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      
-      {/* 1. Header Minimalis Resmi BPS */}
-      <Header />
-
-      {/* 2. Menu Navigasi Bersih & Ramah */}
-      <Navbar />
-
-      {/* 3. Kontainer Konten Utama */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageRouter />
-      </main>
-
-      {/* 4. Footer Bersih */}
-      <footer className="bg-white border-t border-slate-200/80 py-6 mt-auto print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-800">SIGAP BESAPRAH</span>
-            <span>•</span>
-            <span>Badan Pusat Statistik</span>
-          </div>
-
-          <p className="text-slate-400 italic text-center sm:text-right">
-            “Bersaprah dalam Kerja, Sepakat dalam Akuntabilitas.”
-          </p>
-        </div>
-      </footer>
-
-    </div>
+    <Layout
+      activePage={activePage}
+      onNavigate={setActivePage}
+      currentUser={currentUser}
+      onLogout={handleLogout}
+    >
+      <ErrorBoundary onReset={() => setActivePage('dashboard')}>
+        {renderContent()}
+      </ErrorBoundary>
+    </Layout>
   )
 }
 
@@ -84,7 +221,7 @@ export default function App() {
     <AuthProvider>
       <SpjProvider>
         <NavigationProvider>
-          <AppContent />
+          <MainApp />
         </NavigationProvider>
       </SpjProvider>
     </AuthProvider>
